@@ -5,10 +5,10 @@
       <img :src="captchaImage" alt="CAPTCHA" />
     </div>
     <div>
-      <input v-model="userInput" placeholder="Մուտքագրեք CAPTCHA-ն" />
-      <button @click="verifyCaptcha">Ստուգել</button>
+      <input v-model="userInput" placeholder="Enter CAPTCHA" />
+      <button @click="verifyCaptcha">Verify</button>
     </div>
-    <button @click="loadCaptcha">Փոխել CAPTCHA-ն</button>
+    <button @click="loadCaptcha">Refresh CAPTCHA</button>
   </div>
 </template>
 
@@ -18,7 +18,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      captchaId: "",
+      captchaID: "",
       captchaImage: "",
       userInput: "",
     };
@@ -26,28 +26,33 @@ export default {
   methods: {
     async loadCaptcha() {
       try {
+        // Ստանում ենք CAPTCHA ID
         const response = await axios.get("http://localhost:8080/captcha");
-        this.captchaId = response.data.id;
-        this.captchaImage = response.data.captcha;
+        this.captchaID = response.data.id;
+
+        // Ստեղծում ենք պատկերի URL
+        this.captchaImage = `http://localhost:8080/captcha/image/${this.captchaID}`;
       } catch (error) {
         console.error("Error loading CAPTCHA:", error);
       }
     },
     async verifyCaptcha() {
       try {
-        const response = await axios.post("http://localhost:8080/verify", {
-          id: this.captchaId,
+        // Ստուգում ենք օգտատիրոջ պատասխանը
+        const response = await axios.post("http://localhost:8080/captcha/verify", {
+          id: this.captchaID,
           answer: this.userInput,
         });
+
         alert(response.data.message);
       } catch (error) {
-        alert("CAPTCHA սխալ է կամ խնդիր կա: Խնդրում ենք փորձել նորից:");
+        alert("CAPTCHA incorrect or something went wrong.");
         console.error("Error verifying CAPTCHA:", error);
       }
     },
   },
   mounted() {
-    this.loadCaptcha();
+    this.loadCaptcha(); // Էջի բեռնումից հետո գեներացնում ենք CAPTCHA
   },
 };
 </script>
