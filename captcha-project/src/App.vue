@@ -37,6 +37,7 @@ export default {
       }
     },
 
+
     async verifyCaptcha() {
     try {
     // Send verification request to the backend
