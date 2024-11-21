@@ -38,46 +38,19 @@ func main() {
 
 		redisStore.Set(captchaId, captchaDigiths)
 
-		// captchaSolution := ""
-		// for _, digit := range captchaDigiths {
-		// 	captchaSolution += strconv.Itoa(int(digit))
-		// }
-
-		//captcha.Store.Set(captchaId, captchaDigiths)
-
-		// captchaSolution := captcha
-
-		// err := rdb.Set(ctx, captchaId, captchaSolution, time.Minute*5).Err()
-
-		// if err != nil {
-		// 	c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "faild to save captcha"})
-		// 	return
-		// }
-
 		c.IndentedJSON(http.StatusOK, gin.H{"id": captchaId})
 	})
-
-	// r.GET("/captcha/image/:id", func(c *gin.Context) {
-	// 	captchaId := c.Param("id")
-	// 	c.Header("Content-Type", "image/png")
-
-	// 	if err := captcha.WriteImage(c.Writer, captchaId, captcha.StdWidth, captcha.StdHeight); err != nil {
-	// 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "captcha not found"})
-	// 	}
-	// })
 
 	r.GET("/captcha/image/:id", func(c *gin.Context) {
 		captchaId := c.Param("id")
 		log.Printf("Requested CAPTCHA ID: %s\n", captchaId)
 
-		// Fetch CAPTCHA digits from Redis
 		digits := redisStore.Get(captchaId, false)
 		if digits == nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "captcha not found"})
 			return
 		}
 
-		// Write the CAPTCHA image
 		c.Header("Content-Type", "image/png")
 		if err := captcha.WriteImage(c.Writer, captchaId, captcha.StdWidth, captcha.StdHeight); err != nil {
 			log.Printf("Failed to render CAPTCHA: %v\n", err)
@@ -107,51 +80,11 @@ func main() {
 		}
 
 		if storedCode == req.Answer {
-			rdb.Del(ctx, req.Id) // Delete key on successful verification
+			rdb.Del(ctx, req.Id)
 			c.IndentedJSON(http.StatusOK, gin.H{"status": "success"})
 		} else {
 			c.IndentedJSON(http.StatusUnauthorized, gin.H{"status": "failure"})
 		}
-
-		//* // var req struct {
-		// 	Id     string `json:"id"`
-		// 	Answer string `json:"answer"`
-		// }
-
-		// if err := c.ShouldBindJSON(&req); err != nil {
-		// 	c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
-		// 	return
-		// }
-
-		// if captcha.VerifyString(req.Id, req.Answer) {
-		// 	c.IndentedJSON(http.StatusOK, gin.H{"status": "success"})
-		// } else {
-		// 	c.IndentedJSON(http.StatusNotAcceptable, gin.H{"status": "failure"})
-		// }
-
-		//*
-
-		// storedCode, err := rdb.Get(ctx, req.Id).Result()
-		// if err == redis.Nil {
-		// 	c.IndentedJSON(http.StatusNotFound, gin.H{"error": "captcha not found or expired"})
-		// 	return
-		// } else if err != nil {
-		// 	c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "redis error"})
-		// 	return
-		// }
-
-		// if storedCode == req.Answer {
-		// 	rdb.Del(ctx, req.Id)
-		// 	c.IndentedJSON(http.StatusOK, gin.H{"status": "success"})
-		// } else {
-		// 	c.IndentedJSON(http.StatusUnauthorized, gin.H{"status": "failure"})
-		// }
-
-		// if captcha.VerifyString(req.Id, req.Answer) {
-		// 	c.IndentedJSON(http.StatusOK, gin.H{"message": "CAPTCHA correct"})
-		// } else {
-		// 	c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": "CAPTCHA incorrect"})
-		// }
 	})
 
 	r.Run(":8080")

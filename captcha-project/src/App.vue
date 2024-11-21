@@ -36,6 +36,7 @@ export default {
         console.error("Error loading CAPTCHA:", error);
       }
     },
+
     async verifyCaptcha() {
     try {
     // Send verification request to the backend
@@ -46,19 +47,19 @@ export default {
 
     // Handle response
       if (response.data.status === "success") {
-        alert("CAPTCHA verified successfully!"); 
+        alert("CAPTCHA verified successfully!"); // Display success message
      } else {
-        alert("CAPTCHA verification failed!"); 
+        alert("CAPTCHA verification failed!"); // Display failure message
       }
     } catch (error) {
       console.error("Error verifying CAPTCHA:", error);
-      alert("An error occurred during CAPTCHA verification."); 
-    }
-  },
+      alert("An error occurred during CAPTCHA verification."); // Handle errors
+  }
+},
 
   },
   mounted() {
-    this.loadCaptcha(); 
+    this.loadCaptcha(); // Էջի բեռնումից հետո գեներացնում ենք CAPTCHA
   },
 };
 </script>
