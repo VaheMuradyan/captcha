@@ -36,21 +36,6 @@ export default {
         console.error("Error loading CAPTCHA:", error);
       }
     },
-    // async verifyCaptcha() {
-    //   try {
-    //     // Ստուգում ենք օգտատիրոջ պատասխանը
-    //     const response = await axios.post("http://localhost:8080/captcha/verify", {
-    //       id: this.captchaID,
-    //       answer: this.userInput,
-    //     });
-
-    //     alert(response.data.message);
-    //   } catch (error) {
-    //     alert("CAPTCHA incorrect or something went wrong.");
-    //     console.error("Error verifying CAPTCHA:", error);
-    //   }
-    // },
-
     async verifyCaptcha() {
     try {
     // Send verification request to the backend
@@ -61,19 +46,19 @@ export default {
 
     // Handle response
       if (response.data.status === "success") {
-        alert("CAPTCHA verified successfully!"); // Display success message
+        alert("CAPTCHA verified successfully!"); 
      } else {
-        alert("CAPTCHA verification failed!"); // Display failure message
+        alert("CAPTCHA verification failed!"); 
       }
     } catch (error) {
       console.error("Error verifying CAPTCHA:", error);
-      alert("An error occurred during CAPTCHA verification."); // Handle errors
+      alert("An error occurred during CAPTCHA verification."); 
     }
   },
 
   },
   mounted() {
-    this.loadCaptcha(); // Էջի բեռնումից հետո գեներացնում ենք CAPTCHA
+    this.loadCaptcha(); 
   },
 };
 </script>

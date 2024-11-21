@@ -51,13 +51,12 @@ func (s *RedisStore) Get(id string, clear bool) []byte {
 	}
 
 	if clear {
-		_, _ = s.client.Del(s.ctx, id).Result() // Delete the key if clear is true
+		_, _ = s.client.Del(s.ctx, id).Result()
 	}
 
-	// Convert stored string back to byte array
 	digits := []byte{}
 	for _, char := range result {
-		digits = append(digits, byte(char-'0')) // Convert each character back to a digit
+		digits = append(digits, byte(char-'0'))
 	}
 	return digits
 }
