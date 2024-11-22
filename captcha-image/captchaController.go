@@ -1,4 +1,4 @@
-package main
+package captchaimage
 
 import (
 	"context"
@@ -11,17 +11,17 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-var ctx2 = context.Background()
-var rdb2 *redis.Client
+var ctx = context.Background()
+var rdb *redis.Client
 
 type CaptchaController struct {
 	redisStore *RedisStore
 }
 
 func NewCaptchaController() *CaptchaController {
-	initRedis2()
+	initRedis()
 
-	redisStore := NewRedisStore(rdb2, time.Minute*5, ctx2)
+	redisStore := NewRedisStore(rdb, time.Minute*5, ctx)
 	captcha.SetCustomStore(redisStore)
 
 	return &CaptchaController{
@@ -67,7 +67,7 @@ func (cc *CaptchaController) VerifyCaptcha(c *gin.Context) {
 		return
 	}
 
-	storedCode, err := rdb2.Get(ctx2, req.Id).Result()
+	storedCode, err := rdb.Get(ctx, req.Id).Result()
 	if err == redis.Nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "captcha not found or expired"})
 		return
@@ -77,19 +77,19 @@ func (cc *CaptchaController) VerifyCaptcha(c *gin.Context) {
 	}
 
 	if storedCode == req.Answer {
-		rdb2.Del(ctx2, req.Id)
+		rdb.Del(ctx, req.Id)
 		c.IndentedJSON(http.StatusOK, gin.H{"status": "success"})
 	} else {
 		c.IndentedJSON(http.StatusUnauthorized, gin.H{"status": "failure"})
 	}
 }
 
-func initRedis2() {
-	rdb2 = redis.NewClient(&redis.Options{
+func initRedis() {
+	rdb = redis.NewClient(&redis.Options{
 		Addr: "localhost:6379",
 	})
 
-	pong, err := rdb2.Ping(ctx2).Result()
+	pong, err := rdb.Ping(ctx).Result()
 	if err != nil {
 		panic("Faild to connect ot Redis: " + err.Error())
 	}
