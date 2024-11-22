@@ -39,13 +39,12 @@ func (s *RedisStore) Set(id string, digiths []byte) {
 	if err != nil {
 		panic("Faild to set CAPTCHA in Redis " + err.Error())
 	}
-	log.Printf("saving captcha: Id=%s, Digits=%s\n", id, captchaSolution)
 
 }
 func (s *RedisStore) Get(id string, clear bool) []byte {
 	result, err := s.client.Get(s.ctx, id).Result()
 	if err == redis.Nil {
-		return nil // CAPTCHA not found
+		return nil
 	} else if err != nil {
 		panic("Failed to get CAPTCHA from Redis " + err.Error())
 	}

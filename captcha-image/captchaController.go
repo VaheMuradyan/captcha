@@ -41,7 +41,7 @@ func (cc *CaptchaController) CreateCaptcha(c *gin.Context) {
 
 func (cc *CaptchaController) RenderCaptchaImage(c *gin.Context) {
 	captchaId := c.Param("id")
-	log.Printf("Requested CAPTCHA ID: %s\n", captchaId)
+
 
 	digits := cc.redisStore.Get(captchaId, false)
 	if digits == nil {
